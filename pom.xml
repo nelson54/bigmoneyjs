@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>BigMoneyJs</artifactId>
+    <name>BigMoneyJs</name>
+    <groupId>com.englandlogistics</groupId>
+    <version>0.1-ALPHA</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>optimize</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target name="-optimize" description="Combine and minify files.">
+                                <echo message="Running optimize." />
+
+                                <property name="requirejs.dir" value="${basedir}/src/main/js/" />
+
+                                <java classname="org.mozilla.javascript.tools.shell.Main" failonerror="true">
+                                    <classpath>
+                                        <pathelement location="${basedir}/build/lib/rhino/js.jar" />
+                                        <pathelement location="${basedir}/build/lib/closure/compiler.jar" />
+                                    </classpath>
+                                    <arg value="${requirejs.dir}/dist/r.js" />
+                                    <arg value="-o" />
+                                    <arg value="name=main" />
+                                    <arg value="out=${project.build.outputDirectory}/js/bigmoney/bigmoney-min.js" />
+                                    <arg value="baseUrl=${requirejs.dir}" />
+                                </java>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.5</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/js/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/js/</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+
+
