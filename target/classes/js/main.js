@@ -1,3 +1,4 @@
-require(['./app/bigmoney', './app/currencyunit'], function(BigMoney, CurrencyUnit) {
-    document.write( BigMoney.zero(CurrencyUnit.USD()).toString() );
+require(['app/bigmoney', 'app/currencyunit'], function(BigMoney, CurrencyUnit) {
+    //console.log( BigMoney.zero(CurrencyUnit.USD()).toString() );
+    console.log( BigMoney.zero(CurrencyUnit.USD()).toString() );
 });
