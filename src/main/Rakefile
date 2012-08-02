@@ -1,0 +1,18 @@
+abort "Please use Ruby 1.9 to build Ember.js!" if RUBY_VERSION !~ /^1\.9/
+
+require "bundler/setup"
+require 'rake-pipeline'
+require "rake-pipeline-web-filters/neuter_filter"
+
+def pipeline
+  Rake::Pipeline::Project.new("Assetfile")
+end
+
+desc "Build BigMoney.js"
+task :dist do
+  puts "Building BigMoney.js..."
+  pipeline.invoke
+  puts "Done"
+end
+
+task :default => :dist

@@ -1,0 +1,10 @@
+  require "rake-pipeline-web-filters"
+  require "rake-pipeline-web-filters/helpers"
+  
+  output "public"
+  input "js" do
+    match "*.js" do
+      filter Rake::Pipeline::Web::Filters::NeuterFilter, "neutered.js"
+    end
+  end
+  
