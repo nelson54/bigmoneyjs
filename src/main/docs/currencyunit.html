@@ -1,28 +1,90 @@
-<!DOCTYPE html>  <html> <head>   <title>currencyunit.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="bigmoney.html">                 bigmoney.js               </a>                                           <a class="source" href="currencyunit.html">                 currencyunit.js               </a>                                           <a class="source" href="underscore.html">                 underscore.js               </a>                                           <a class="source" href="docco.html">                 docco.js               </a>                                           <a class="source" href="r.html">                 r.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               currencyunit.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="nx">define</span><span class="p">([</span><span class="s1">&#39;./underscore&#39;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">_</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">CurrencyUnit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">){</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+<!DOCTYPE html>  <html> <head>   <title>currencyunit.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="bigmoney.html">                 bigmoney.js               </a>                                           <a class="source" href="currency-data.html">                 currency-data.js               </a>                                           <a class="source" href="currencyunit.html">                 currencyunit.js               </a>                                           <a class="source" href="main.html">                 main.js               </a>                                           <a class="source" href="thing.html">                 thing.js               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               currencyunit.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="kd">var</span> <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/underscore&#39;</span><span class="p">),</span> 
+	<span class="nx">currencyData</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./currency-data&#39;</span><span class="p">),</span> 
+	<span class="nx">currency</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./lib/currency&#39;</span><span class="p">),</span>
+	<span class="nx">CurrencyUnit</span><span class="p">;</span>
 
-        <span class="k">this</span><span class="p">.</span><span class="nx">getCode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
-        <span class="p">};</span>
+<span class="nx">CurrencyUnit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="nx">numericCode</span><span class="p">,</span> <span class="nx">country</span><span class="p">,</span> <span class="nx">decimalPlaces</span><span class="p">){</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">code</span> <span class="o">=</span> <span class="nx">code</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">numericCode</span> <span class="o">=</span> <span class="nx">numericCode</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">country</span> <span class="o">=</span> <span class="nx">country</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">decimalPlaces</span> <span class="o">=</span> <span class="nx">decimalPlaces</span><span class="p">;</span>
 
-        <span class="k">this</span><span class="p">.</span><span class="nx">equals</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currencyUnit</span><span class="p">){</span>
-            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">currencyUnit</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span><span class="p">){</span>
-                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="nx">currencyUnit</span><span class="p">;</span>
-            <span class="p">}</span>
-            <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">currencyUnit</span> <span class="o">===</span> <span class="s2">&quot;object&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">code</span><span class="p">){</span>
-                <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
-            <span class="p">}</span>
-        <span class="p">};</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">getCode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
     <span class="p">};</span>
 
-    <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">of</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">){</span><span class="k">return</span> <span class="k">new</span> <span class="nx">CurrencyUnit</span><span class="p">(</span><span class="nx">code</span><span class="p">)};</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Add Static Constructors</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">([</span><span class="s2">&quot;AUD&quot;</span><span class="p">,</span> <span class="s2">&quot;CAD&quot;</span><span class="p">,</span> <span class="s2">&quot;CHF&quot;</span><span class="p">,</span> <span class="s2">&quot;EUR&quot;</span><span class="p">,</span> <span class="s2">&quot;GBP&quot;</span><span class="p">,</span> <span class="s2">&quot;JPY&quot;</span><span class="p">,</span> <span class="s2">&quot;USD&quot;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">){</span>
-        <span class="nx">CurrencyUnit</span><span class="p">[</span><span class="nx">code</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-            <span class="k">return</span> <span class="k">new</span> <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">of</span><span class="p">(</span><span class="nx">code</span><span class="p">)</span>
-        <span class="p">}</span>
-    <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">getNumericCode</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">numericCode</span><span class="p">;</span>
+    <span class="p">};</span>
 
-    <span class="k">return</span> <span class="nx">CurrencyUnit</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">getCountry</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">country</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">getSymbol</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="nx">currency</span><span class="p">.</span><span class="nx">getLocalCurrencySign</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">code</span><span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">getDecimalPlaces</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">decimalPlaces</span><span class="p">;</span>
+    <span class="p">};</span>
+
+    <span class="k">this</span><span class="p">.</span><span class="nx">equals</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currencyUnit</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">currencyUnit</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span><span class="p">){</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="nx">currencyUnit</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">currencyUnit</span> <span class="o">===</span> <span class="s2">&quot;object&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">code</span><span class="p">){</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span> <span class="o">===</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">code</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCode</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByNumericCode</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCountry</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">_create</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="nx">numericCode</span><span class="p">,</span> <span class="nx">decimalPlaces</span><span class="p">,</span> <span class="nx">country</span><span class="p">){</span>
+    <span class="k">return</span> <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">_register</span><span class="p">(</span>
+        <span class="k">new</span> <span class="nx">CurrencyUnit</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="nx">numericCode</span><span class="p">,</span> <span class="nx">country</span><span class="p">,</span> <span class="nx">decimalPlaces</span><span class="p">)</span>
+    <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">_register</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currencyUnit</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">code</span> <span class="o">=</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">getCode</span><span class="p">(),</span>
+        <span class="nx">numeric</span> <span class="o">=</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">getNumericCode</span><span class="p">(),</span>
+        <span class="nx">country</span> <span class="o">=</span> <span class="nx">currencyUnit</span><span class="p">.</span><span class="nx">getCountry</span><span class="p">();</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCode</span><span class="p">[</span><span class="nx">code</span><span class="p">]</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span>
+        <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCode</span><span class="p">[</span><span class="nx">code</span><span class="p">]</span> <span class="o">=</span> <span class="nx">currencyUnit</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByNumericCode</span><span class="p">[</span><span class="nx">numeric</span><span class="p">]</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span>
+        <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByNumericCode</span><span class="p">[</span><span class="nx">numeric</span><span class="p">]</span> <span class="o">=</span> <span class="nx">currencyUnit</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCountry</span><span class="p">[</span><span class="nx">country</span><span class="p">]</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span>
+        <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCountry</span><span class="p">[</span><span class="nx">country</span><span class="p">]</span> <span class="o">=</span> <span class="nx">currencyUnit</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">currencyUnit</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">of</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">){</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCode</span><span class="p">[</span><span class="nx">code</span><span class="p">]){</span>
+        <span class="k">return</span> <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">currenciesByCode</span><span class="p">[</span><span class="nx">code</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Could not find CurrencyCode &#39;&quot;</span> <span class="o">+</span> <span class="nx">code</span> <span class="o">+</span> <span class="s2">&quot;&#39; in &#39;CurrencyUnit.currenciesByCode&#39;&quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">currencyData</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">cd</span><span class="p">){</span>
+    <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">_create</span><span class="p">(</span><span class="nx">cd</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">cd</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">cd</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nx">cd</span><span class="p">[</span><span class="mi">3</span><span class="p">]);</span>
 <span class="p">});</span>
+
+</pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>Add Common Static Lookups</p>             </td>             <td class="code">               <div class="highlight"><pre>
+<span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">([</span><span class="s2">&quot;AUD&quot;</span><span class="p">,</span> <span class="s2">&quot;CAD&quot;</span><span class="p">,</span> <span class="s2">&quot;CHF&quot;</span><span class="p">,</span> <span class="s2">&quot;EUR&quot;</span><span class="p">,</span> <span class="s2">&quot;GBP&quot;</span><span class="p">,</span> <span class="s2">&quot;JPY&quot;</span><span class="p">,</span> <span class="s2">&quot;USD&quot;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">code</span><span class="p">){</span>
+    <span class="nx">CurrencyUnit</span><span class="p">[</span><span class="nx">code</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+        <span class="k">return</span> <span class="nx">CurrencyUnit</span><span class="p">.</span><span class="nx">of</span><span class="p">(</span><span class="nx">code</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">CurrencyUnit</span><span class="p">;</span>
 
 </pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 

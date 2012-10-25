@@ -3,8 +3,8 @@ var CurrencyUnit = require('./currencyunit'),
 	_ = require('./lib/underscore');
 
 var BigDecimal = bigdecimal.BigDecimal,
-    parseMoneyDecimal = "(.+)\ ([0-9]*)[.]([0-9]*)",
-    parseMoneyNoDecimal = "(.+)\ ([0-9]*)";
+    parseMoneyDecimal = /(.+)\ ([0-9]*)[.]([0-9]*)/,
+    parseMoneyNoDecimal = /(.+)\ ([0-9]*)/;
 
 var BigMoney = function(currencyUnit, amount){
     //## Methods
@@ -12,9 +12,7 @@ var BigMoney = function(currencyUnit, amount){
     //### toString
     //Returns object represented as a string in the format of ***[CURRENCYUNIT] [Value]***.
     this.toString = function(){
-
-        var amt = this.amount,
-            code = this.currencyUnit.getCode(),
+        var code = this.currencyUnit.getCode(),
             amount = this.amount.toString();
 
         return code + " " + amount;
@@ -30,6 +28,29 @@ var BigMoney = function(currencyUnit, amount){
             throw new Error("This method only accepts a BigMoney value.");
     };
 
+    //###dividedBy
+    //Returns a copy of this monetary value divided by the specified value using the specified rounding mode to adjust the scale.
+    this.dividedBy = function(value, roundingmode){
+        if (this._isBigMoney(value) && this._hasSameCurrencyUnit(bigmoney)){
+            return new BigMoney(this.currencyUnit, this.amount.divide(value.amount, roundingmode).setScale(this.currencyUnit.getDecimalPlaces(), roundingMode));
+        } else if (this._isBigMoney(value) && !this._hasSameCurrencyUnit(bigmoney)){
+            throw new Error("This method only accepts a BigMoney value.");
+        } else if (this._isBigDecimal(value)){
+            return new BigMoney(this.currencyUnit, this.amount.divide(value, roundingmode).setScale(this.currencyUnit.getDecimalPlaces(), roundingMode));
+        }
+    };
+
+    //### multipliedBy
+    //Returns a copy of this monetary value multiplied by the specified value.
+    this.dividedBy = function(value){
+        if (this._isBigMoney(value) && this._hasSameCurrencyUnit(bigmoney)){
+            return new BigMoney(this.currencyUnit, this.amount.multiply(value.amount));
+        } else if (this._isBigMoney(value) && !this._hasSameCurrencyUnit(bigmoney)){
+            throw new Error("This method only accepts a BigMoney value.");
+        } else if (this._isBigDecimal(value)){
+            return new BigMoney(this.currencyUnit, this.amount.multiply(value));
+        }
+    };
 
     //### minus
     //This is used to add another BigMoney value of the same currency to this big money.
@@ -39,6 +60,12 @@ var BigMoney = function(currencyUnit, amount){
             return new BigMoney(this.currencyUnit, amount.subtract(amount2).toString());
         } else
             throw new Error("This method only accepts a BigMoney value.");
+    };
+
+    //### negated
+    //Returns a BigDecimal whose value is (-this), and whose scale is this.scale().
+    this.negated = function(){
+        return new BigMoney(this.currencyUnit, amount.negate());
     };
 
     //### compareTo
@@ -70,27 +97,74 @@ var BigMoney = function(currencyUnit, amount){
         return this.compareTo( bigmoney.amount ) === -1;
     };
 
+    //### withCurrencyScale
+    // Returns a new BigMoney value of the correct Scale depending on CurrencyUnit
+    this.withCurrencyScale = function(roundingMode){
+        return new BigMoney(this.currencyUnit, new BigDecimal(this.amount).setScale(this.currencyUnit.getDecimalPlaces(), roundingMode));
+    };
+
+    //### getCurrencyUnit
+    //Gets the currency.
+    this.getCurrencyUnit = function(){
+        return this.currencyUnit;
+    };
+
+    //### isCurrencyScale
+    //Checks if this money has the scale of the currency.
+    this.isCurrencyScale = function(){
+        return this.currencyUnit.getDecimalPlaces() === this.amount.scale();
+    };
+
+    //### isNegative
+    // Checks if the amount is less than zero.
+    this.isNegative = function(){
+        return !this.amount.abs().equals(this.amount) && !this.amount.equals(BigDecimal.ZERO);
+    };
+
+    //### isNegativeOrZero
+    // Checks if the amount is zero or less than zero.
+    this.isNegativeOrZero = function(){
+        return !this.amount.abs().equals(this.amount);
+    };
+
+    //### isPositive
+    // Checks if the amount is greater than zero.
+    this.isPositive = function(){
+        return this.amount.abs().equals(this.amount) && !this.amount.equals(BigDecimal.ZERO);
+    };
+
+    //### isPositiveOrZero
+    // Checks if the amount is zero or greater than zero.
+    this.isPositiveOrZero = function(){
+        return this.amount.abs().equals(this.amount);
+    };
+
+    //## isZero
+    // Checks if the amount is zero.
+    this.isZero = function(){
+        return this.amount.equals(BigDecimal.ZERO);
+    };
+
     //## Private methods
 
-    this._isBigMoney = function(bigMoney){
-        return bigMoney instanceof BigMoney;
+    this._isBigMoney = function(value){
+        return value instanceof BigMoney;
     };
+
+        this._isBigDecimal = function(value){
+            return value instanceof BigDecimal;
+        };
 
     this._hasSameCurrencyUnit = function(bigmoney){
         return this._isBigMoney(bigmoney) && this.currencyUnit.equals(bigmoney.currencyUnit);
     };
-
-    this._getBigDecimalWithScale = function(amount){
-        return new BigDecimal(amount).setScale(this.currencyUnit.getDecimalPlaces(), BigDecimal.ROUND_DOWN);
-    };
-
 
     //## Initialize Object
     //***currencyUnit*** - the currency type (USD, CAD, etc.).
     this.currencyUnit = currencyUnit;
 
     //***amount*** - the BigDecimal representation of the money value.
-    this.amount = this._getBigDecimalWithScale(amount);
+    this.amount = new BigDecimal(amount);
 };
 
 //##Static Method Constructors
@@ -98,15 +172,13 @@ var BigMoney = function(currencyUnit, amount){
 //### parse
 // Static constructer, creates a enw BigMoney from a string (example "USD 1.40" or "USD 1")
 BigMoney.parse = function(string){
-    var decRegExp = new RegExp(parseMoneyDecimal),
-        noDecRegExp = new RegExp(parseMoneyNoDecimal),
-        arr, code, amount;
-    if (decRegExp.test(string)){
-        arr = decRegExp.exec(string).slice(1);
+    var arr, code, amount;
+    if (parseMoneyDecimal.test(string)){
+        arr = parseMoneyDecimal.exec(string).slice(1);
         code = arr[0];
         amount = arr[1] + "." + arr[2];
-    } else if (noDecRegExp.test(string)){
-        arr = noDecRegExp.exec(string).slice(1);
+    } else if (parseMoneyNoDecimal.test(string)){
+        arr = parseMoneyNoDecimal.exec(string).slice(1);
         code = arr[0];
         amount = arr[1];
     }
@@ -124,5 +196,17 @@ BigMoney.of = function(currencyUnit, amount){
 BigMoney.zero = function(currencyUnit){
     return new BigMoney(currencyUnit, "0");
 };
+
+//##Static Properties
+BigMoney.RoundingMode = {};
+
+BigMoney.RoundingMode.UP = BigDecimal.ROUND_UP;
+BigMoney.RoundingMode.DOWN = BigDecimal.ROUND_DOWN;
+BigMoney.RoundingMode.CEILING = BigDecimal.ROUND_CEILING;
+BigMoney.RoundingMode.FLOOR = BigDecimal.ROUND_FLOOR;
+BigMoney.RoundingMode.HALF_UP = BigDecimal.ROUND_HALF_UP;
+BigMoney.RoundingMode.HALF_DOWN = BigDecimal.ROUND_HALF_DOWN;
+BigMoney.RoundingMode.HALF_EVEN = BigDecimal.ROUND_HALF_EVEN;
+BigMoney.RoundingMode.UNNECESSARY = BigDecimal.ROUND_UNNECESSARY;
 
 module.exports = BigMoney;
